@@ -1,0 +1,31 @@
+{
+  "name": "telegram-sats-admin",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Telegram group admin bot that mutes new members until they pay a Lightning entry fee via the Breez Spark SDK",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "mnemonic": "node scripts/new-mnemonic.mjs",
+    "wallet": "node --env-file-if-exists=.env scripts/wallet.ts",
+    "test": "node test/store.test.ts && node test/gate.test.ts"
+  },
+  "dependencies": {
+    "@breeztech/breez-sdk-spark": "0.28.0",
+    "@scure/bip39": "2.4.0",
+    "grammy": "1.46.0",
+    "qrcode": "1.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.6",
+    "@types/qrcode": "^1.5.6",
+    "typescript": "7.0.2"
+  },
+  "allowScripts": {
+    "better-sqlite3@12.11.1": true
+  }
+}

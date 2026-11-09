@@ -1,0 +1,25 @@
+#!/bin/bash
+# Run the bot's wallet CLI against the live wallet on the server.
+# Stops the bot for the duration (two processes must not share the wallet storage) and starts it again after.
+#
+#   sats-wallet balance
+#   sats-wallet payments [limit]
+#   sats-wallet send <bolt11 | spark address | bitcoin address> [amountSats]
+set -euo pipefail
+[ "$(id -u)" -eq 0 ] || exec sudo "$0" "$@"
+
+SVC=telegram-sats-admin
+was_active=0
+systemctl is-active --quiet "$SVC" && was_active=1
+systemctl stop "$SVC"
+restore() { [ "$was_active" -eq 1 ] && systemctl start "$SVC"; }
+trap restore EXIT
+
+cd /opt/telegram-sats-admin
+set -a
+# shellcheck disable=SC1091
+. /etc/telegram-sats-admin.env
+set +a
+sudo -u satsadmin \
+  --preserve-env=TELEGRAM_BOT_TOKEN,BREEZ_API_KEY,BREEZ_MNEMONIC,BREEZ_NETWORK,ENTRY_FEE_SATS,INVOICE_EXPIRY_SECS,DATA_DIR,BREEZ_LOG_FILTER,LOG_LEVEL \
+  /usr/local/bin/node scripts/wallet.ts "$@"
